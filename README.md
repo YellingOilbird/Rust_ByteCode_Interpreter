@@ -64,16 +64,16 @@ pub(crate) fn parse_code() -> (HashMap<String, u8>, Vec<Operation>) {
 ```READ_VAR Var```       - push Value from Var to VM stack  
 ```ADD```                - try pop two values from VM stack and add them...  
 ```MULTIPLY```           - ...or multiply  
-```CMP```         - ...compare. VM flags switch when Value 1 ``` Value 2, or when Value 1 != Value 2    
-```INCREMENT```          - after pop READ_VAR Value made it +1  
-```JUMP Label```         - jump unconditionally to place in code      
-```JUMP_GREATER Label``` - jump after ```CMP``` with Value 1 ``` Value 2 to place in code    
-```JUMP_LESS Label```    - jump after ```CMP``` with Value 1 ``` Value 2 to place in code    
-```JUMP_EQUALS Label```  - jump after ```CMP``` with Value 1 = Value 2 to place in code    
-```SEND_CHANNEL Data```  - [todo!()]  
-```RECV_CHANNEL```,      - [todo!()]  
-```SPAWN```,             - [todo!()]  
-```RETURN_VALUE```       - pop Value from VM stack  
+```CMP```                - ...compare. VM flags switch when Value 1 > Value 2, or when Value 1 != Value 2  
+```INCREMENT```          - after pop READ_VAR Value made it +1    
+```JUMP Label```         - jump unconditionally to place in code        
+```JUMP_GREATER Label``` - jump after ```CMP``` with Value 1 > Value 2 to place in code      
+```JUMP_LESS Label```    - jump after ```CMP``` with Value 1 < Value 2 to place in code      
+```JUMP_EQUALS Label```  - jump after ```CMP``` with Value 1 = Value 2 to place in code      
+```SEND_CHANNEL Data```  - [todo!()]    
+```RECV_CHANNEL```,      - [todo!()]    
+```SPAWN```,             - [todo!()]    
+```RETURN_VALUE```       - pop Value from VM stack    
 
 Also, in code we have:  
 
