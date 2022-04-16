@@ -1,0 +1,25 @@
+// x=0
+LOAD_VAL 0
+WRITE_VAR 'x'
+
+// loop starts here
+#[LOOP]
+
+// compare x to 5
+LOAD_VAL 5
+READ_VAR 'x'
+CMP
+//if x>5 -> jump to return 
+JUMP_GREATER BREAK
+//else x++ and new compare x to 5
+READ_VAR 'x'
+INCREMENT
+WRITE_VAR 'x'
+JUMP LOOP
+
+//end of loop
+#[BREAK]
+READ_VAR 'x'
+RETURN_VALUE
+
+//x=6 - answer
