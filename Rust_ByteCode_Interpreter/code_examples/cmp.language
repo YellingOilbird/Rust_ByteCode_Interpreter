@@ -1,0 +1,19 @@
+//x=0
+LOAD_VAL 4
+WRITE_VAR 'x'
+LOAD_VAL 5
+READ_VAR 'x'
+//compare x and 5
+CMP
+//if x<5 -> jump to return 
+JUMP_LESS BREAK
+LOAD_VAL 3
+WRITE_VAR 'x'
+READ_VAR 'x'
+//jump here
+#[BREAK]
+LOAD_VAL 2
+WRITE_VAR 'x'
+READ_VAR 'x'
+RETURN_VALUE
+//if compare works result will be 2
