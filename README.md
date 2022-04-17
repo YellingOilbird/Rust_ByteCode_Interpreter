@@ -27,7 +27,6 @@ To this:
 ```rust
 let (_, operations) = parse_code("./code_examples/loop1.language");
 assert_eq!(operations, _operations_vec);
-foobar.pluralize('word')
 ```
 And made this changes in fn parse_code() from this
 
