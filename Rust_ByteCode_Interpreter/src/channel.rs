@@ -5,6 +5,7 @@ use std::sync::{Arc, Condvar, Mutex};
 pub struct Sender<T> {
     data: Arc<Data<T>>,
 }
+// using Mutex lock we are increase senders and drop inner thread. Thread-safe data clone to Sender struct
 impl<T> Clone for Sender<T> {
     fn clone(&self) -> Self {
         let mut thread = self.data.thread.lock().unwrap();
@@ -16,6 +17,7 @@ impl<T> Clone for Sender<T> {
         }
     }
 }
+//  unlocked Arc(data) pushes to back of queue
 impl<T> Sender<T> {
     pub fn send(&mut self, t: T) {
         let mut thread = self.data.thread.lock().unwrap();
@@ -31,6 +33,9 @@ impl<T> Drop for Sender<T> {
         let is_last = thread.senders_amount;
         drop(thread);
         if is_last == 0 {
+            //Using CondVar to notify Receiver to "wake up"
+            //You can add one more CondVar for Receiver implementation to notify Sender
+            //If Sender push data faster than Receiver takes it, CondVar can says "wake up" to Sender
             self.data.is_available.notify_all();
         }
     }
@@ -38,6 +43,7 @@ impl<T> Drop for Sender<T> {
 pub struct Receiver<T> {
     data: Arc<Data<T>>,
 }
+// unlocked Arc(data) taked from front of queue
 impl<T> Receiver<T> {
     pub fn receive(&mut self) -> Option<T> {
         let mut thread = self.data.thread.lock().unwrap();
@@ -61,6 +67,7 @@ struct Data<T> {
     is_available :Condvar
 }
 struct LockedQueue<T> {
+    //you can have a conflict if you push/pop data to Vector. So, we are using double-ended queue
     queue : VecDeque<T>,
     senders_amount : usize
 }
