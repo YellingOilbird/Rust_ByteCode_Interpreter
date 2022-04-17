@@ -1,10 +1,12 @@
-use std::collections::HashMap; 
+use std::collections::HashMap;
+use std::hash::Hash; 
 use crate::parser::parse_code;
+use crate::channel::{Sender, Receiver, channel, self};
     
 pub(crate) type Val = u8;
 pub(crate) type Var = char;
 pub(crate) type Lbl = u8;  
-pub(crate) type Data = usize;          
+pub(crate) type Data = u8;          
 
 #[derive (Clone, Copy, PartialEq, Eq, Debug)]
 #[allow(non_camel_case_types, dead_code)]
@@ -30,6 +32,7 @@ pub enum VirtualMachineError {
     MismatchType,
     MissingVariable(String),
     EmptyStack,
+    ReceiveChannelError
 }
 #[derive (Debug, Clone, PartialEq, Eq)]
 pub struct VirtualMachine {
@@ -68,6 +71,7 @@ impl VirtualMachine {
         let mut output = Ok(Val::MIN);
         // parser.rs gives us (modificators, operations)
         (_,self.operations) = parse_code();
+        let (mut tx,mut rx) = channel();
 
         while self.ip < self.operations.len() as u8 {
             match self.operations[self.ip as usize] {
@@ -127,8 +131,14 @@ impl VirtualMachine {
                         continue; 
                     }
                 }
-                Operation::SEND_CHANNEL(data) => todo!("{}", data),
-                Operation::RECV_CHANNEL => todo!(),
+                Operation::SEND_CHANNEL(data) => {
+                    tx.send(data);
+                    self.stack.push(data)
+                }
+                Operation::RECV_CHANNEL => match rx.receive() {
+                    Some(_data) => output = self.pop(),
+                    None => return  Err(VirtualMachineError::ReceiveChannelError),
+                }
                 Operation::SPAWN => todo!(),
             }
             self.ip += 1;
