@@ -44,7 +44,7 @@ pub(crate) fn parse_code() -> (HashMap<String, u8>, Vec<Operation>) {
 To this:
 
 ```rust
-pub(crate) fn parse_code() -> (HashMap<String, u8>, Vec<Operation>) {
+pub(crate) fn parse_code(filename: &str) -> (HashMap<String, u8>, Vec<Operation>) {
     //let args: Vec<String> = env::args().collect();
     //let path = &args[1];
     // create Hashmap for #[modificator] and Vector for operations
