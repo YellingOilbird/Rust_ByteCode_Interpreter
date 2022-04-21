@@ -69,7 +69,7 @@ pub(crate) fn parse_code(filename: &str) -> (HashMap<String, u8>, Vec<Operation>
 ```JUMP_GREATER Label``` - jump after ```CMP``` with Value 1 > Value 2 to place in code      
 ```JUMP_LESS Label```    - jump after ```CMP``` with Value 1 < Value 2 to place in code      
 ```JUMP_EQUALS Label```  - jump after ```CMP``` with Value 1 = Value 2 to place in code      
-```SEND_CHANNEL Data```  - create channel with mutex and send, pop() value from stack for this 
+```SEND_CHANNEL Data```  - create channel with mutex and send, pop() value from stack for this  
 ```RECV_CHANNEL```,      - receive created channel data, push value into VM stack  
 ```SPAWN```,             - [todo!()]    
 ```RETURN_VALUE```       - pop Value from VM stack    
