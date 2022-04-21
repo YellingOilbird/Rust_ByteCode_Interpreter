@@ -1,7 +1,54 @@
 use std::collections::VecDeque;
-use std::os::unix::thread;
+use std::collections::HashMap;
 use std::sync::{Arc, Condvar, Mutex};
 
+#[derive(Debug, Clone)]
+pub struct ChannelData<T> {
+    pub channel_name : char,
+    pub tx : Sender<T>,
+    pub rx : Receiver<T>
+}
+
+impl<T> ChannelData<T> {
+    pub fn new(name: char) -> ChannelData<T>{
+        let (tx,rx) = channel::<T>();
+        ChannelData {
+            channel_name: name,
+            tx,
+            rx
+        } 
+    }
+    pub fn default() -> Self {
+        let (tx,rx) = channel::<T>();
+        ChannelData {
+            channel_name: 'c',
+            tx,
+            rx
+        } 
+    }
+}
+
+
+pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
+    let thread = LockedQueue {
+        queue: VecDeque::default(),
+        senders_amount: 1,
+    };
+    let data = Data {
+        thread: Mutex::new(thread),
+        is_available: Condvar::new(),
+    };
+    let arc_data = Arc::new(data);
+    (
+        Sender {
+            data: arc_data.clone()
+        },
+        Receiver {
+            data: arc_data.clone()
+        },
+    )
+}
+#[derive(Debug)]
 pub struct Sender<T> {
     data: Arc<Data<T>>,
 }
@@ -40,6 +87,7 @@ impl<T> Drop for Sender<T> {
         }
     }
 }
+#[derive(Debug, Clone)]
 pub struct Receiver<T> {
     data: Arc<Data<T>>,
 }
@@ -61,42 +109,30 @@ impl<T> Receiver<T> {
         }
     }
 }
-
+#[derive(Debug)]
 struct Data<T> {
     thread : Mutex<LockedQueue<T>>,
     is_available :Condvar
 }
+#[derive(Debug)]
 struct LockedQueue<T> {
     //you can have a conflict if you push/pop data to Vector. So, we are using double-ended queue
     queue : VecDeque<T>,
     senders_amount : usize
 }
 
-pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
-    let thread = LockedQueue {
-        queue: VecDeque::default(),
-        senders_amount: 1,
-    };
-    let data = Data {
-        thread: Mutex::new(thread),
-        is_available: Condvar::new(),
-    };
-    let arc_data = Arc::new(data);
-    (
-        Sender {
-            data: arc_data.clone()
-        },
-        Receiver {
-            data: arc_data.clone()
-        },
-    )
-}
 
 #[test]
 fn test_send_receive() {
     let (mut tx,mut rx) = channel();
     tx.send(42);
     assert_eq!(rx.receive(), Some(42))
+}
+#[test]
+fn test_channel_data() {
+    let mut channel = ChannelData::new('c');
+    channel.tx.send(3);
+    assert_eq!(channel.rx.receive(), Some(3))
 }
 #[test]
 fn test_drop_sender() {
