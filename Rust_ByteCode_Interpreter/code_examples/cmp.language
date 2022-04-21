@@ -1,3 +1,4 @@
+#[FUNC]
 //x=0
 LOAD_VAL 4
 WRITE_VAR 'x'
@@ -16,4 +17,5 @@ LOAD_VAL 2
 WRITE_VAR 'x'
 READ_VAR 'x'
 RETURN_VALUE
+#[FUNC]
 //if compare works result will be 2
